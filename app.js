@@ -23,16 +23,28 @@ const options = {
   timeMaxHour: 23,
   timeStepMinute: 5,
   selectedTheme: "light",
-  input: true,
+  timeControls: "range",
   displayDateMin: getTomorrowDate(),
   dateMax: getDateMax(),
   onChangeTime(self) {
     finalTime = self.context.selectedTime;
-    console.log(finalTime);
   },
   onClickDate(self) {
     finalDate = self.context.selectedDates[0];
-    console.log(finalDate);
+  },
+  onCreateDateEls(self, dateEl) {
+    console.log(dateEl);
+    
+    const randomBoolean = Math.random() < 0.1;
+    if (!randomBoolean) return;
+    const randomPrice = Math.floor(Math.random() * (999 - 100 + 1) + 100);
+    const btnEl = dateEl.querySelector('[data-vc-date-btn]');
+    const day = btnEl.innerText;
+    btnEl.style.flexDirection = 'column';
+    btnEl.innerHTML = `
+      <span>${day}</span>
+      <span style="font-size: 8px;color: #8BC34A;">$${randomPrice}</span>
+    `;
   },
 };
 
