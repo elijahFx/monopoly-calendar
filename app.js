@@ -9,9 +9,24 @@ const submitBtn = document.querySelector("#submitBtn");
 
 let isClicked = false;
 
-switchElement.addEventListener("click", () => {
-  isClicked = !isClicked;
-});
+const events = [
+  {
+    date: "2025-03-25",
+    name: "мероприятие 1",
+  },
+  {
+    date: "2025-04-01",
+    name: "мероприятие 2",
+  },
+  {
+    date: "2025-04-15",
+    name: "мероприятие 3",
+  },
+];
+
+// switchElement.addEventListener("click", () => {
+//   isClicked = !isClicked;
+//  });
 
 let finalTime = undefined;
 let finalDate = undefined;
@@ -33,9 +48,19 @@ const options = {
     finalDate = self.context.selectedDates[0];
   },
   onCreateDateEls(self, dateEl) {
-    console.log(dateEl);
-    
-    const randomBoolean = Math.random() < 0.1;
+    // const btnEl = dateEl.querySelector('[data-vc-date]');
+    const button = dateEl.querySelector("button");
+    const ariaLabel = button.getAttribute("aria-label");
+
+    const formattedDate = getFormattedDate(ariaLabel)
+
+    events.forEach((el) => {
+      if (el.date === formattedDate) {
+        button.style.color = `gold`;
+      }
+    });
+
+    /**  const randomBoolean = Math.random() < 0.1;
     if (!randomBoolean) return;
     const randomPrice = Math.floor(Math.random() * (999 - 100 + 1) + 100);
     const btnEl = dateEl.querySelector('[data-vc-date-btn]');
@@ -45,6 +70,8 @@ const options = {
       <span>${day}</span>
       <span style="font-size: 8px;color: #8BC34A;">$${randomPrice}</span>
     `;
+
+    */
   },
 };
 
@@ -144,4 +171,36 @@ function getTomorrowDate() {
   const day = String(tomorrow.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
+}
+
+function getFormattedDate(label) {
+  const months = {
+    января: "01",
+    февраля: "02",
+    марта: "03",
+    апреля: "04",
+    мая: "05",
+    июня: "06",
+    июля: "07",
+    августа: "08",
+    сентября: "09",
+    октября: "10",
+    ноября: "11",
+    декабря: "12",
+  };
+
+  // Разбиваем строку на части
+  const [day, month, year] = label.split(" ");
+
+  // Получаем числовой месяц из объекта
+  const numericMonth = months[month];
+
+  // Форматируем день и год
+  const formattedDay = day.padStart(2, "0"); // Добавляем ведущий ноль, если день однозначный
+  const formattedYear = year.replace("г.", "").trim(); // Убираем "г." и лишние пробелы
+
+  // Собираем итоговую дату
+  const formattedDate = `${formattedYear}-${numericMonth}-${formattedDay}`;
+
+  return formattedDate;
 }
