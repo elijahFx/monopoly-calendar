@@ -4,8 +4,41 @@ import "vanilla-calendar-pro/styles/layout.css";
 import "vanilla-calendar-pro/styles/themes/light.css";
 import "vanilla-calendar-pro/styles/themes/dark.css";
 
+const months = {
+  января: "01",
+  февраля: "02",
+  марта: "03",
+  апреля: "04",
+  мая: "05",
+  июня: "06",
+  июля: "07",
+  августа: "08",
+  сентября: "09",
+  октября: "10",
+  ноября: "11",
+  декабря: "12",
+};
+
+const priceMap = {
+  10: 100,
+  20: 200,
+  30: 300,
+  40: 400,
+  50: 600,
+  1000: 1,
+};
+
+const childCoefficient = 1.5;
+let selectedValue = 10;
+
 const switchElement = document.querySelector("input");
 const submitBtn = document.querySelector("#submitBtn");
+const selectElement = document.getElementById("people");
+const isChild = document.querySelector("#childParty");
+const childrenAge = document.querySelector("#childrenAge");
+const childrenAgeLabel = document.querySelector("#childrenAgeLabel");
+const childrenCount = document.querySelector("#childrenCount");
+const childrenCountLabel = document.querySelector("#childrenCountLabel");
 
 let isClicked = false;
 
@@ -46,13 +79,14 @@ const options = {
   },
   onClickDate(self) {
     finalDate = self.context.selectedDates[0];
+    openSidebar();
   },
   onCreateDateEls(self, dateEl) {
     // const btnEl = dateEl.querySelector('[data-vc-date]');
     const button = dateEl.querySelector("button");
     const ariaLabel = button.getAttribute("aria-label");
 
-    const formattedDate = getFormattedDate(ariaLabel)
+    const formattedDate = getFormattedDate(ariaLabel);
 
     events.forEach((el) => {
       if (el.date === formattedDate) {
@@ -146,6 +180,50 @@ submitBtn.addEventListener("click", async () => {
   }
 });
 
+document.getElementById("closeSidebar").addEventListener("click", closeSidebar);
+document.getElementById("overlay").addEventListener("click", closeSidebar);
+
+selectElement.addEventListener("change", (event) => {
+  selectedValue = event.target.value; // Получаем значение выбранного option
+
+  document.querySelector("#priceValue").innerText =
+    calculatePrice(selectedValue);
+});
+
+isChild.addEventListener("change", () => {
+  document.querySelector("#priceValue").innerText =
+    calculatePrice(selectedValue);
+  
+  if (!isChild.checked) {
+    childrenAge.style.display = `none`;
+    childrenAgeLabel.style.display = `none`;
+    childrenCountLabel.style.display = `none`;
+    childrenCount.style.display = `none`;
+  } else {
+    childrenAge.style.display = `block`;
+    childrenAgeLabel.style.display = `block`;
+    childrenCountLabel.style.display = `block`;
+    childrenCount.style.display = `block`;
+  }
+});
+
+// Обработка формы
+document.getElementById("bookingForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const phone = document.getElementById("phone").value;
+  const name = document.getElementById("name").value;
+  const people = document.getElementById("people").value;
+
+  console.log("Данные формы:", {
+    phone,
+    name,
+    people,
+    date: finalDate,
+    time: finalTime,
+  });
+  closeSidebar();
+});
+
 // utilities
 
 function getDateMax() {
@@ -174,21 +252,6 @@ function getTomorrowDate() {
 }
 
 function getFormattedDate(label) {
-  const months = {
-    января: "01",
-    февраля: "02",
-    марта: "03",
-    апреля: "04",
-    мая: "05",
-    июня: "06",
-    июля: "07",
-    августа: "08",
-    сентября: "09",
-    октября: "10",
-    ноября: "11",
-    декабря: "12",
-  };
-
   // Разбиваем строку на части
   const [day, month, year] = label.split(" ");
 
@@ -203,4 +266,39 @@ function getFormattedDate(label) {
   const formattedDate = `${formattedYear}-${numericMonth}-${formattedDay}`;
 
   return formattedDate;
+}
+
+function openSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  sidebar.classList.add("open");
+  overlay.style.display = "block";
+  document.querySelector("#priceValue").innerText =
+    calculatePrice(selectedValue);
+}
+
+// Закрытие окошка
+function closeSidebar() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("overlay");
+  sidebar.classList.remove("open");
+  overlay.style.display = "none";
+}
+
+function formatNumber(number) {
+  // Преобразуем число в строку с двумя десятичными знаками
+  const formattedNumber = parseFloat(number).toFixed(2);
+
+  // Заменяем точку на запятую
+  return formattedNumber.replace(".", ",");
+}
+
+function calculatePrice(chosenAmount) {
+  let firstPrice = priceMap[chosenAmount];
+
+  if (isChild.checked) {
+    firstPrice = firstPrice * childCoefficient;
+  }
+
+  return formatNumber(firstPrice);
 }

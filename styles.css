@@ -75,3 +75,191 @@ input:checked + .slider:before {
 .slider.round:before {
   border-radius: 50%;
 }
+
+
+
+/* Форма отправки */
+#overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 100;
+}
+
+#sidebar {
+  position: fixed;
+  top: 0;
+  right: -550px;
+  width: 550px;
+  height: 100%;
+  background: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+  transition: right 0.3s ease-in-out;
+  z-index: 101;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+#sidebar.open {
+  right: 0;
+}
+
+#bookingForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+#bookingForm label {
+  font-weight: bold;
+}
+
+#bookingForm input,
+#bookingForm select,
+#bookingForm button {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Стили для числовых полей */
+.number-input {
+  width: 100px; /* Уменьшаем ширину для трехзначных чисел */
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#bookingForm button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+#bookingForm button[type="button"] {
+  background: #6c757d;
+}
+
+/* Стили для переключателя */
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #007bff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+/* Текст стоимости */
+.price-text {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+
+#priceValue {
+  color: #007bff;
+}
+
+.contact-methods {
+  display: flex;
+  gap: 15px;
+}
+
+.contact-method {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.contact-logo {
+  width: 30px;
+  height: 30px;
+}
+
+.flex-center label {
+  margin-bottom: 0;
+}
+
+
+#closeSidebar {
+  width: 25px;
+  height: 25px;
+  cursor: pointer;
+  fill: #e24242ce;
+  position: absolute;
+  right: 20px;
+  top: 20px
+}
+
+#closeSidebar:active {
+  width: 23px;
+  height: 23px;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px
+}
+
+#childrenAge, #childrenAgeLabel, #childrenCount, #childrenCountLabel {
+  display: none;
+}
