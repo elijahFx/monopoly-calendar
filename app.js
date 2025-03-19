@@ -1,8 +1,8 @@
 import { Calendar } from "vanilla-calendar-pro";
 import "vanilla-calendar-pro/styles/index.css";
-import "vanilla-calendar-pro/styles/layout.css"; // Только скелет
-import "vanilla-calendar-pro/styles/themes/light.css"; // Светлая тема
-import "vanilla-calendar-pro/styles/themes/dark.css"; // Темная тема
+import "vanilla-calendar-pro/styles/layout.css";
+import "vanilla-calendar-pro/styles/themes/light.css";
+import "vanilla-calendar-pro/styles/themes/dark.css";
 
 const switchElement = document.querySelector("input");
 const submitBtn = document.querySelector("#submitBtn");
@@ -11,8 +11,6 @@ let isClicked = false;
 
 switchElement.addEventListener("click", () => {
   isClicked = !isClicked;
-  console.log(isClicked);
-  calendar.init();
 });
 
 let finalTime = undefined;
@@ -25,6 +23,9 @@ const options = {
   timeMaxHour: 23,
   timeStepMinute: 5,
   selectedTheme: "light",
+  input: true,
+  displayDateMin: getTomorrowDate(),
+  dateMax: getDateMax(),
   onChangeTime(self) {
     finalTime = self.context.selectedTime;
     console.log(finalTime);
@@ -57,23 +58,17 @@ const fetchEvents = async () => {
   }
 };
 
-// Основная функция для инициализации календаря
 const initializeCalendar = async () => {
-  // Получаем список дат с сервера
   const events = await fetchEvents();
 
-  // Инициализируем календарь
   const calendar = new Calendar("#calendar", options);
 
-  // Устанавливаем даты с событиями
   calendar.set({
-    dates: events.map((e) => e.date), // Передаем массив дат
+    dates: events.map((e) => e.date),
   });
 
-  // Инициализируем календарь
   calendar.init();
 
-  // Возвращаем календарь для дальнейшего использования
   return calendar;
 };
 
@@ -83,7 +78,6 @@ initializeCalendar().then((cal) => {
   calendar = cal;
 });
 
-// Обработчик для кнопки отправки
 submitBtn.addEventListener("click", async () => {
   if (!finalDate || !finalTime) {
     console.log("Пожалуйста, выберите дату и время.");
@@ -112,3 +106,30 @@ submitBtn.addEventListener("click", async () => {
     console.error("Ошибка при отправке данных:", error);
   }
 });
+
+// utilities
+
+function getDateMax() {
+  const currentDate = new Date();
+  const maxDate = new Date(currentDate);
+
+  maxDate.setMonth(currentDate.getMonth() + 3);
+
+  const year = maxDate.getFullYear();
+  const month = String(maxDate.getMonth() + 1).padStart(2, "0"); // Месяцы начинаются с 0
+  const day = String(maxDate.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
+
+function getTomorrowDate() {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1); // Добавляем 1 день
+
+  const year = tomorrow.getFullYear();
+  const month = String(tomorrow.getMonth() + 1).padStart(2, "0"); // Месяцы начинаются с 0
+  const day = String(tomorrow.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
