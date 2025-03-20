@@ -30,6 +30,9 @@ const priceMap = {
 
 const childCoefficient = 1.5;
 let selectedValue = 10;
+let isTelegram = false;
+let isViber = false;
+let isInstagram = false;
 
 const switchElement = document.querySelector("input");
 const submitBtn = document.querySelector("#submitBtn");
@@ -39,6 +42,18 @@ const childrenAge = document.querySelector("#childrenAge");
 const childrenAgeLabel = document.querySelector("#childrenAgeLabel");
 const childrenCount = document.querySelector("#childrenCount");
 const childrenCountLabel = document.querySelector("#childrenCountLabel");
+const svgElementTelegram = document.querySelector(".contact-method svg");
+const svgElementInstagram = document.querySelector(
+  "#bookingForm > div:nth-child(4) > div > div:nth-child(3) > svg"
+);
+const svgElementViber = document.querySelector(
+  "#SVGRepo_iconCarrier > path:nth-child(2)"
+);
+const circleViber = document.querySelector("#SVGRepo_iconCarrier > circle");
+const viberContainder = document.querySelector("#Layer_1");
+const phoneInput = document.querySelector("#phone");
+
+console.log(svgElementInstagram);
 
 let isClicked = false;
 
@@ -70,7 +85,7 @@ const options = {
   timeMinHour: 9,
   timeMaxHour: 23,
   timeStepMinute: 5,
-  selectedTheme: "light",
+  selectedTheme: "dark",
   timeControls: "range",
   displayDateMin: getTomorrowDate(),
   dateMax: getDateMax(),
@@ -193,7 +208,7 @@ selectElement.addEventListener("change", (event) => {
 isChild.addEventListener("change", () => {
   document.querySelector("#priceValue").innerText =
     calculatePrice(selectedValue);
-  
+
   if (!isChild.checked) {
     childrenAge.style.display = `none`;
     childrenAgeLabel.style.display = `none`;
@@ -222,6 +237,87 @@ document.getElementById("bookingForm").addEventListener("submit", (e) => {
     time: finalTime,
   });
   closeSidebar();
+});
+
+viberContainder.addEventListener("click", () => {
+  if (!isViber) {
+    isViber = true;
+    svgElementViber.style.fill = `#7360f2`;
+    circleViber.style.fill = `#7360f2`;
+  } else {
+    isViber = false;
+    svgElementViber.style.fill = `black`;
+    circleViber.style.fill = `black`;
+  }
+});
+
+svgElementInstagram.addEventListener("click", () => {
+  if (!isInstagram) {
+    isInstagram = true;
+    svgElementInstagram.setAttribute("fill", "#ec7b39");
+  } else {
+    isInstagram = false;
+    svgElementInstagram.setAttribute("fill", "black");
+  }
+});
+
+svgElementTelegram.addEventListener("click", () => {
+  if (!isTelegram) {
+    isTelegram = true;
+    svgElementTelegram.setAttribute("fill", "#0088CC");
+  } else {
+    isTelegram = false;
+    svgElementTelegram.setAttribute("fill", "black");
+  }
+});
+
+phoneInput.addEventListener('input', (event) => {
+  let value = phoneInput.value;
+
+  // Проверяем, была ли нажата Backspace или Delete
+  const isBackspaceOrDelete = event.inputType === 'deleteContentBackward' || event.inputType === 'deleteContentForward';
+
+  // Если нажата Backspace/Delete и длина значения меньше или равна 4, оставляем "+375"
+  if (isBackspaceOrDelete && value.length <= 4) {
+    phoneInput.value = '+375';
+    return;
+  }
+
+  // Убеждаемся, что значение начинается с "+375"
+  if (!value.startsWith('+375')) {
+    value = '+375' + value.replace(/[^0-9]/g, '');
+  }
+
+  // Удаляем все символы, кроме цифр
+  value = '+375' + value.slice(4).replace(/[^0-9]/g, '');
+
+  // Ограничиваем длину значения (максимум 13 символов, включая "+375")
+  if (value.length > 13) {
+    value = value.slice(0, 13);
+  }
+
+  // Обновляем значение input
+  phoneInput.value = value;
+});
+
+// Обработчик события blur (когда input теряет фокус)
+phoneInput.addEventListener('blur', () => {
+  // Форматируем номер в виде +375-XX-XXX-XX-XX
+  let value = phoneInput.value;
+
+  if (value.length > 4) {
+    value = value.slice(0, 4) + '-' + value.slice(4, 6) + '-' + value.slice(6, 9) + '-' + value.slice(9, 11) + '-' + value.slice(11, 13);
+  }
+
+  // Обновляем значение input
+  phoneInput.value = value;
+});
+
+// Обработчик события focus (когда input получает фокус)
+phoneInput.addEventListener('focus', () => {
+  // Убираем дефисы, чтобы пользователь мог редактировать номер
+  let value = phoneInput.value.replace(/-/g, '');
+  phoneInput.value = value;
 });
 
 // utilities
@@ -302,3 +398,94 @@ function calculatePrice(chosenAmount) {
 
   return formatNumber(firstPrice);
 }
+
+
+// sliders
+
+function controlFromInput(fromSlider, fromInput, toInput, controlSlider) {
+  const [from, to] = getParsed(fromInput, toInput);
+  fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+  if (from > to) {
+      fromSlider.value = to;
+      fromInput.value = to;
+  } else {
+      fromSlider.value = from;
+  }
+}
+  
+function controlToInput(toSlider, fromInput, toInput, controlSlider) {
+  const [from, to] = getParsed(fromInput, toInput);
+  fillSlider(fromInput, toInput, '#C6C6C6', '#25daa5', controlSlider);
+  setToggleAccessible(toInput);
+  if (from <= to) {
+      toSlider.value = to;
+      toInput.value = to;
+  } else {
+      toInput.value = from;
+  }
+}
+
+function controlFromSlider(fromSlider, toSlider, fromInput) {
+const [from, to] = getParsed(fromSlider, toSlider);
+fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+if (from > to) {
+  fromSlider.value = to;
+  fromInput.value = to;
+} else {
+  fromInput.value = from;
+}
+}
+
+function controlToSlider(fromSlider, toSlider, toInput) {
+const [from, to] = getParsed(fromSlider, toSlider);
+fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+setToggleAccessible(toSlider);
+if (from <= to) {
+  toSlider.value = to;
+  toInput.value = to;
+} else {
+  toInput.value = from;
+  toSlider.value = from;
+}
+}
+
+function getParsed(currentFrom, currentTo) {
+const from = parseInt(currentFrom.value, 10);
+const to = parseInt(currentTo.value, 10);
+return [from, to];
+}
+
+function fillSlider(from, to, sliderColor, rangeColor, controlSlider) {
+  const rangeDistance = to.max-to.min;
+  const fromPosition = from.value - to.min;
+  const toPosition = to.value - to.min;
+  controlSlider.style.background = `linear-gradient(
+    to right,
+    ${sliderColor} 0%,
+    ${sliderColor} ${(fromPosition)/(rangeDistance)*100}%,
+    ${rangeColor} ${((fromPosition)/(rangeDistance))*100}%,
+    ${rangeColor} ${(toPosition)/(rangeDistance)*100}%, 
+    ${sliderColor} ${(toPosition)/(rangeDistance)*100}%, 
+    ${sliderColor} 100%)`;
+}
+
+function setToggleAccessible(currentTarget) {
+const toSlider = document.querySelector('#toSlider');
+if (Number(currentTarget.value) <= 0 ) {
+  toSlider.style.zIndex = 2;
+} else {
+  toSlider.style.zIndex = 0;
+}
+}
+
+const fromSlider = document.querySelector('#fromSlider');
+const toSlider = document.querySelector('#toSlider');
+const fromInput = document.querySelector('#fromInput');
+const toInput = document.querySelector('#toInput');
+fillSlider(fromSlider, toSlider, '#C6C6C6', '#25daa5', toSlider);
+setToggleAccessible(toSlider);
+
+fromSlider.oninput = () => controlFromSlider(fromSlider, toSlider, fromInput);
+toSlider.oninput = () => controlToSlider(fromSlider, toSlider, toInput);
+fromInput.oninput = () => controlFromInput(fromSlider, fromInput, toInput, toSlider);
+toInput.oninput = () => controlToInput(toSlider, fromInput, toInput, toSlider);
